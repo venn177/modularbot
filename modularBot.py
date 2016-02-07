@@ -15,6 +15,7 @@ import yaml
 from datetime import datetime
 from ftplib import FTP
 
+message = None
 
 class modularFatalError(Exception):
 	pass
@@ -48,6 +49,9 @@ class modularBot(object):
 		self.plugins = self.config.modularBot['plugins']
 		self.sleep = self.config.modularBot['sleeptime']
 		self.subreddits = self.config.modularBot['subreddits']
+		
+	def reply(self, message, comment):
+		comment.reply(message, comment)
 	
 	def _import_plugins(self):
 		self._set_import_path()
@@ -76,6 +80,7 @@ class modularBot(object):
 		if path not in sys.path:
 			sys.path = [path] + sys.path
 			
+			
 	def run(self):
 		try:
 			r = praw.Reddit('modularBot, the modular reddit bot, by /u/venn177, v0.1')
@@ -90,11 +95,11 @@ class modularBot(object):
 		self._import_plugins()
 		
 		while True:
-			
 			comments = subreddits.get_comments(sort = 'new', limit = 50)
 			for comment in comments:
 				for f in self.catchalls:
 					if comment.id not in already_done:
+						print('1')
 						f(message)
 						print('Replying')
 						already_done.add(comment.id)
@@ -123,9 +128,6 @@ class modularBot(object):
 			return _f
 			
 		return real_listen
-	
-	def reply(self, message=None):
-		comment.reply(message)
 		
 	def catchall(self, wrapped):
 		@functools.wraps(wrapped)
