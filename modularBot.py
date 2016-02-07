@@ -14,8 +14,7 @@ import sys
 import yaml
 from datetime import datetime
 from ftplib import FTP
-
-message = None
+global message # I'm not sure why this needs to be here, but it does in order to work. Declaring it global elsewhere doesn't, either.
 
 class modularFatalError(Exception):
 	pass
@@ -49,6 +48,7 @@ class modularBot(object):
 		self.plugins = self.config.modularBot['plugins']
 		self.sleep = self.config.modularBot['sleeptime']
 		self.subreddits = self.config.modularBot['subreddits']
+		self.postlimit = self.config.modularBot['postlimit']
 		
 	def reply(self, message):
 		comment.reply(message)
