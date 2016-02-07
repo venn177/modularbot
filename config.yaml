@@ -4,3 +4,4 @@ modularBot:
     plugins: plugins
     sleeptime: 300 #time in seconds before reloading
     subreddits: programming+learnprogramming
+    postlimit: 50
