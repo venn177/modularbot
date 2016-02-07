@@ -32,8 +32,8 @@ class Config(object):
         y = yaml.load(f)
         f.close()
         self.__dict__.update(y)
-
-	
+		
+		
 class modularBot(object):
 
 	commands = []
@@ -50,8 +50,8 @@ class modularBot(object):
 		self.sleep = self.config.modularBot['sleeptime']
 		self.subreddits = self.config.modularBot['subreddits']
 		
-	def reply(self, message, comment):
-		comment.reply(message, comment)
+	def reply(self, message):
+		comment.reply(message)
 	
 	def _import_plugins(self):
 		self._set_import_path()
@@ -95,18 +95,15 @@ class modularBot(object):
 		self._import_plugins()
 		
 		while True:
-			comments = subreddits.get_comments(sort = 'new', limit = 50)
+			comments = subreddits.get_comments(sort = 'new', limit = self.postlimit)
+			global comment
 			for comment in comments:
-				for f in self.catchalls:
-					if comment.id not in already_done:
-						print('1')
-						f(message)
-						print('Replying')
-						already_done.add(comment.id)
 				for (f, matcher) in self.listeners:
-					if comment.id not in already_done:
-						print('Replying')
+					if matcher.search(comment.body):
+						f(message)
 						already_done.add(comment.id)
+					print('Replying')
+					
 
 			time.sleep(self.sleep)
 			print('Sleeping for ' + str(self.sleep) + ' seconds.')
@@ -146,6 +143,7 @@ def usage():
 		plugins: plugins
 		sleeptime: 300 #time in seconds before reloading
 		subreddits: programming+learnprogramming
+		postlimit: 50 #number of posts back the bot goes
 	"""
 	print('Usage: modularBot <config.yaml>')
 	print('\nExample YAML\n{}'.format(yaml_template))
